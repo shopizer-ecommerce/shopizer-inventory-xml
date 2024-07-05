@@ -91,7 +91,7 @@ public class ProductImportv1 {
 	private static final String MERCHANT = "DEFAULT";
 	private boolean DRY_RUN = false;
 	
-	private final int MAX_COUNT = 5;
+	private final int MAX_COUNT = 45;
 	
 	private static final char DELIMITER = '|';
 	
@@ -102,7 +102,7 @@ public class ProductImportv1 {
 	/**
 	 * Where to find images
 	 */
-	private String IMAGE_BASE_DIR = "/Users/carlsamson/Documents/csti/projects/perfecto/images";
+	private String IMAGE_BASE_DIR = "/Users/carlsamson/Documents/csti/projects/perfecto/photo/";
 	
 	/**
 	 * where to find csv							
@@ -138,18 +138,19 @@ public class ProductImportv1 {
 				   new InputStreamReader(
 		                      new FileInputStream(FILE_NAME), StandardCharsets.UTF_8));
 		
+		
 		@SuppressWarnings("resource")
 		CSVParser parser = new CSVParser(in,format);
-		
-		//if there are properties
-		List<PersistableProductAttribute> attributes = new ArrayList<PersistableProductAttribute>();
-
 		
 		HttpHeaders httpHeader = getHeader();
 
 		int i = 0;
 		int count = 0;
 		for(CSVRecord record : parser){
+			
+			//if there are properties
+			List<PersistableProductAttribute> attributes = new ArrayList<PersistableProductAttribute>();
+
 
 			String code = null;
 			if(record.isSet("sku")) {
@@ -324,9 +325,10 @@ public class ProductImportv1 {
 			}
 			
 			/** images **/
-			if(record.isSet("image_name")) {
-				String image = record.get("image_name");
-				if(!StringUtils.isBlank(image)) {
+			//if(record.isSet("image_name")) {
+			if(record.isSet("name_fr")) {
+				String image = record.get("name_fr");
+				//if(!StringUtils.isBlank(image)) {
 					
 					StringBuilder imageName = new StringBuilder();
 					imageName.append(IMAGE_BASE_DIR).append(image.trim()).append(".jpg");//TODO remove
@@ -339,13 +341,14 @@ public class ProductImportv1 {
 	
 						persistableImage.setBytes(bytes);
 						persistableImage.setName(imgPath.getName());
+						persistableImage.setDefaultImage(true);
 			
 						List<PersistableImage> images = new ArrayList<PersistableImage>();
 						images.add(persistableImage);
 							
 						product.setImages(images);
 					}
-				}
+				//}
 			}
 			
 			/**properties**/
